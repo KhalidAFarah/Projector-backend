@@ -65,6 +65,6 @@ func main() {
 
 	})
 
-	app.Listen(os.Getenv("PORT"))
+	app.Listen(":" + os.Getenv("PORT"))
 
 }
