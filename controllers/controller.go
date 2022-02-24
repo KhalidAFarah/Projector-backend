@@ -3,18 +3,17 @@ package controllers
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 
-
-	"github.com/Khalidium/projector/controllers/functions"
 	"github.com/Khalidium/projector/controllers/destiny"
+	"github.com/Khalidium/projector/controllers/functions"
 )
 
 //router
 var router mux.Router
-
 
 func Start() {
 	router := mux.NewRouter()
@@ -30,11 +29,9 @@ func Start() {
 
 	router.HandleFunc("/api/destiny/generatemanifest/", destiny.GenerateManifest).Methods("GET")
 	router.HandleFunc("/api/destiny/query/", destiny.DestinyManifestQuery).Methods("GET")
-	
 
+	log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), handlers.CORS(credentials, methods, origins)(router)))
 
-	log.Fatal(http.ListenAndServe(":8000", handlers.CORS(credentials, methods, origins)(router))) //+os.Getenv("PORT")
-	
 }
 
 func addEndpoint(endpoint string, menthod string, function func(w http.ResponseWriter, router *http.Request)) {
