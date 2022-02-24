@@ -20,7 +20,7 @@ func Start() {
 	//cors
 	credentials := handlers.AllowCredentials()
 	methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE"})
-	origins := handlers.AllowedOrigins([]string{"https://proteje.netlify.app/*"})
+	origins := handlers.AllowedOrigins([]string{"https://proteje.netlify.app/*", "https://proteje.netlify.app"})
 
 	//endpoints
 	router.HandleFunc("/api/", functions.Front).Methods("GET")
