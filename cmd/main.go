@@ -1,6 +1,6 @@
 package main
 
-import "github.com/Khalidium/projector/controllers"
+import "projector/controllers"
 
 func main() {
 	controllers.Start()

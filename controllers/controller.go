@@ -8,8 +8,8 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 
-	"github.com/Khalidium/projector/controllers/destiny"
-	"github.com/Khalidium/projector/controllers/functions"
+	"projector/controllers/destiny"
+	"projector/controllers/functions"
 )
 
 //router

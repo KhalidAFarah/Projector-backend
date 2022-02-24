@@ -1,4 +1,4 @@
-module github.com/Khalidium/projector
+module projector
 
 go 1.17
 
