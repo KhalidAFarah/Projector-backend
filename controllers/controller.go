@@ -28,7 +28,7 @@ func Start() {
 	router.HandleFunc("/api/gamesshow", functions.Gamesshow).Methods("GET")
 
 	router.HandleFunc("/api/destiny/generatemanifest/", destiny.GenerateManifest).Methods("GET")
-	router.HandleFunc("/api/destiny/query/", destiny.DestinyManifestQuery).Methods("GET")
+	//router.HandleFunc("/api/destiny/query/", destiny.DestinyManifestQuery).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), handlers.CORS(credentials, methods, origins)(router)))
 

@@ -8,7 +8,7 @@ import (
 func main() {
 	//controllers.Start()
 	user := model.User{}
-	user.Init()
+	user.InitUser()
 	//endpoints
 	/*
 		router.HandleFunc("/api/generatemanifest/", generate.generateManifest).Methods("GET")
