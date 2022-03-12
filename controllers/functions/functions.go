@@ -38,7 +38,8 @@ func Front(w http.ResponseWriter, router *http.Request) {
 	json.NewEncoder(w).Encode(m)
 }
 func Sup(w http.ResponseWriter, router *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Add("Content-Type", "application/json")
+	w.Header().Add("Access-Control-Allow-Origin", "*")
 	m := Message{Response: "Sup ✋"}
 	json.NewEncoder(w).Encode(m)
 }
