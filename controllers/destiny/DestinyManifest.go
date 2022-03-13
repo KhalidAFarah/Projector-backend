@@ -2132,7 +2132,7 @@ func GenerateManifest(w http.ResponseWriter, router *http.Request) {
 
 	resp, err := zip.OpenReader("./controllers/destiny/manifest/manifest.zip")
 	if err != nil {
-		log.Fatal("Unable to unzip")
+		log.Fatal(err)
 	}
 
 	for _, file := range resp.File {

@@ -1,14 +1,14 @@
 package main
 
 import (
-	"projector/controllers"
-	//	_ "projector/controllers/destiny/model"
+	//"projector/controllers"
+	"projector/controllers/destiny/model"
 )
 
 func main() {
-	controllers.Start()
+	//controllers.Start()
 	//user := model.User{}
-	//user.InitUser()
+	model.InitUser()
 	//endpoints
 	/*
 		router.HandleFunc("/api/generatemanifest/", generate.generateManifest).Methods("GET")

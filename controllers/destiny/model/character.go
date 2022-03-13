@@ -3,7 +3,7 @@ package model
 import (
 	"database/sql"
 	"encoding/json"
-	_"fmt"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -14,7 +14,7 @@ import (
 
 var base string = "https://www.bungie.net/Platform"
 var key string = "24101fc72fdd4f2f8ce7289e3e4ce847"
-var auth string = "Bearer COX5AxKGAgAgwYFm0BMr5XNG04dtZreIE6YR9W9y6/v+DlP6/y/Ed13gAAAArbG1ljtJvr1KyaY6VwvvKu0kq+0t/Z2k6hKyij2VsTbxmzxixZ+xMq3f7F6d5d8Utf2CSXpxq40ns38KV9zshz3mV5jvG4rnXAgFxzuE8ekHa8RoaAh6c1mQZF6qB6coKF1I/VBZxnfQpiPxhgq56eBYdBdI/KiKf3Ux3zAHR7ix75SNXZFuowuAKTL6ZRUdZmsqv7a40lC4ibXjjTYOtnitaosxOcTd0WOQpF6MrdlWy/7OckCkPxRhHURI1f+j8rcf0czWoDZ4YnYlZIps02nnckRzTQ2h8uvwblHLUIM="
+var auth string = "Bearer CNf7AxKGAgAgK9jqxPZMYlpLd5j0coqa+mha3q79ww9zbpp9CwqblC3gAAAAVUURWDWrYgH5AEU79dUdaSMUqiHU1u9aSFDqKu39Z20B4T+0EV4Z+XB/VyCcM4SZ9cZwDTxd9TOfflw853mZlssB+ADT+2R7gY6yF3adZ4vbwCglKMu/63OP9aMG+zy6A6tSvm4nQqF/I5i9uSYBgU9kv8orC9Y7pzU/hm8DFZtgdg68dgCY9TSdLpmvYHArFIJqv67vyH3ofvfm67PLiHUD16/6vcPrDGa55h2gvjr9T7RvS1aKSwRxIqZzhI3yHND74GbHRN2h5ES2xac94V9FMcJdVZbjEuZKkrroCWY="
 
 type RequestHeader struct {
 	APIKey        string
@@ -67,7 +67,14 @@ type User struct {
 
 }
 type Character struct {
-	
+	Light          			int    		`json:"light"`
+	Stats          			interface{} `json:"stats"`
+	ClassHash            	int64   	`json:"classHash"`
+	EmblemPath           	string  	`json:"emblemPath"`
+	EmblemBackgroundPath 	string  	`json:"emblemBackgroundPath"`
+	EmblemHash           	int64   	`json:"emblemHash"`
+	BaseCharacterLevel   	int     	`json:"baseCharacterLevel"`
+	Inventory 				[]Item 		`json:"inventory"`
 }
 
 type UserData struct {
@@ -100,7 +107,7 @@ type ProfileData struct {
 	} `json:"Response"`
 }
 
-func InitUser() User {
+func InitUser() {
 	req := RequestHeader{APIKey: key, Authorization: auth}
 
 	var userdata UserData
@@ -118,7 +125,7 @@ func InitUser() User {
 		log.Fatal("Unable to read data")
 	}
 
-	db, error := sql.Open("sqlite3", "./controllers/destiny/manifest/world_sql_content_67dd464a4c1a1e547324b3cc0c0ec6d9.content")
+	db, error := sql.Open("sqlite3", "./controllers/destiny/manifest/world_sql_content_f5d265c7cb4dc5794bc2006c58a1f33b.content")
 	if error != nil {
 		log.Fatal("Unable to read data")
 		//m := Message{Response: "Unable to load destiny manifest file"}
@@ -133,8 +140,8 @@ func InitUser() User {
 			log.Fatal("Unable to read data")
 		}
 		
-		var items []Item
-		for itemIndex, item := range characterdata.Response.Equipment.Data.Items {
+		//var items []Item
+		for _, item := range characterdata.Response.Equipment.Data.Items {
 			newHash := strconv.Itoa(int(item.ItemHash))
 			rows, error := db.Query("SELECT * FROM DestinyInventoryItemDefinition WHERE id='" + newHash + "';")
 			if error != nil {
@@ -149,33 +156,78 @@ func InitUser() User {
 			
 			for rows.Next() {
 				rows.Scan(&itemid, &itemdata)
-				items = append(items, itemdata)
+				//items = append(items, itemdata)
 				
-				break
+				fmt.Println(itemdata)
+				fmt.Println("-----------------")
+				//break
 				//data := Data{Id: strconv.Itoa(id), Json: jsondata}
 				//json.NewEncoder(w).Encode(data)
 			}
 			
 			
 			
-			/*i := 0
-			readyPerk := true
-			readyStat := true
+			/*var index int = 0
+			var readyPerk bool = true
+			//readyStat := true
 
 			lengthPerk := len(itemdata.Perks)
-			lengthPerk := len(itemdata.)
 
-			for readyPerk || readyStat {
+			//lengthStat := len(itemdata.)
+			fmt.Println(lengthPerk)
+			for readyPerk {//|| readyStat {
+				if index < lengthPerk {
+			
+
+					perkhash := strconv.Itoa(itemdata.Perks[index].PerkHash)
+					rows, error := db.Query("SELECT * FROM DestinySandboxPerkDefinition WHERE id='" + perkhash + "';")
+					if error != nil {
+						log.Fatal("Unable to read data asd")
+						//m := Message{Response: "Unable to query the destiny manifest"}
+						//json.NewEncoder(w).Encode(m)
+						//return
+					}
+					
+					var perkdata string
+					var perkid int
+					
+					for rows.Next() {
+						rows.Scan(&perkid, &perkdata)
+						//items = append(items, perkdata)
+						fmt.Println(perkdata)
+						
+						
+				
+					}
+					
+					//itemdata.Perks[index] = perkdata
+				}else {
+					readyPerk = false
+				}
+				index++
 
 
+			character : = Character{characterdata.Response.Character.Light,
+				 characterdata.Response.Character.Stats,
+				 characterdata.Response.Character.ClassHash
+				 characterdata.Response.Character.EmblemPath
+				 characterdata.Response.Character.EmblemBackgroundPath
+				 characterdata.Response.Character.EmblemHash
+				 characterdata.Response.Character.BaseCharacterLevel
+				 items
+				}
 			}*/
+
+			
+
+
 
 		}
 		
 
 	}
 
-	return userdata
+	//return userdata
 
 }
 
@@ -375,6 +427,8 @@ type Item struct {
 	Redacted                          bool     `json:"redacted"`
 	Blacklisted                       bool     `json:"blacklisted"`
 }
+
+
 
 /*type Character struct {
 	ID               int    `json:"id"`
