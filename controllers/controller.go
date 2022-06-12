@@ -3,13 +3,14 @@ package controllers
 import (
 	"log"
 	"net/http"
-	"os"
+	//"os"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 
 	"projector/controllers/destiny"
 	"projector/controllers/functions"
+	"projector/controllers/youtube"
 )
 
 //router
@@ -26,11 +27,12 @@ func Start() {
 	router.HandleFunc("/api/", functions.Front).Methods("GET")
 	router.HandleFunc("/api/sup/", functions.Sup).Methods("GET")
 	router.HandleFunc("/api/gamesshow", functions.Gamesshow).Methods("GET")
+	router.HandleFunc("/api/youtube", youtube.GetPlaylist).Methods("GET")
 
 	router.HandleFunc("/api/destiny/generatemanifest/", destiny.GenerateManifest).Methods("GET")
 	//router.HandleFunc("/api/destiny/query/", destiny.DestinyManifestQuery).Methods("GET")
 
-	log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), handlers.CORS(credentials, methods, origins)(router)))
+	log.Fatal(http.ListenAndServe(":9200", handlers.CORS(credentials, methods, origins)(router)))//
 
 }
 
