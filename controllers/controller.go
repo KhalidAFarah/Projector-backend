@@ -27,7 +27,7 @@ func Start() {
 	router.HandleFunc("/api/", functions.Front).Methods("GET")
 	router.HandleFunc("/api/sup/", functions.Sup).Methods("GET")
 	router.HandleFunc("/api/gamesshow", functions.Gamesshow).Methods("GET")
-	router.HandleFunc("/api/youtube", youtube.GetPlaylist).Methods("GET")
+	router.HandleFunc("/api/youtube/", youtube.GetPlaylist).Methods("GET")
 
 	router.HandleFunc("/api/destiny/generatemanifest/", destiny.GenerateManifest).Methods("GET")
 	//router.HandleFunc("/api/destiny/query/", destiny.DestinyManifestQuery).Methods("GET")
