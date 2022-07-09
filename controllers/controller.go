@@ -30,6 +30,7 @@ func Start() {
 	router.HandleFunc("/api/youtube/", youtube.GetPlaylist).Methods("GET")
 
 	router.HandleFunc("/api/destiny/generatemanifest/", destiny.GenerateManifest).Methods("GET")
+	router.HandleFunc("/api/destiny/builds/", destiny.GetBuilds).Methods("GET")
 	//router.HandleFunc("/api/destiny/query/", destiny.DestinyManifestQuery).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":9200", handlers.CORS(credentials, methods, origins)(router)))//

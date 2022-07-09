@@ -1,0 +1,72 @@
+{
+    "warlock": [
+        {
+            "name": "Lazer tag",
+            "preference": ["discipline", "Recovery"],
+            "subclass":  {
+                "item": "1751782730",
+                "aspects":[],
+                "fragments":[]
+            },
+            "helmet": {
+                "item":"",
+                "recomended_mods":["3235178396", "1374092367"],
+                "optional_mods":["3899134858"]
+
+            },
+            "gauntlets": {
+                "item":"-1224609956",
+                "recomended_mods":["3235178396", "39977368"],
+                "optional_mods":["47859594"]
+
+            },
+            "chest_armor": {
+                "item":"",
+                "recomended_mods":["3235178396", "1033816001"],
+                "optional_mods":[]
+
+            },
+            "leg_armor": {
+                "item":"",
+                "recomended_mods":["3401516887", "3320641683"],
+                "optional_mods":[]
+
+            },
+            "bond": {
+                "item":"",
+                "recomended_mods":["3401516887",  "1513970148"],
+                "optional_mods":["3561960031"]
+
+            }
+
+        }
+    ],
+    "hunter": [
+        {
+            "name": "Trickster & Trapper",
+            "helmet": {
+                "item":""
+                
+            },
+            "gauntlets": {
+                "item":""
+
+            },
+            "chest_armor": {
+                "item":""
+
+            },
+            "leg_armor": {
+                "item":""
+
+            },
+            "bond": {
+                "item":""
+
+            }
+        }
+    ],
+    "titan": [
+
+    ]
+}

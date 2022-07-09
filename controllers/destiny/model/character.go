@@ -154,7 +154,7 @@ func InitUser() {
 			var itemdata Item
 			var itemid int
 			
-			for rows.Next() {
+			for rows.Next() {1
 				rows.Scan(&itemid, &itemdata)
 				//items = append(items, itemdata)
 				
