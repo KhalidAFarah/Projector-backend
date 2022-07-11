@@ -2,7 +2,7 @@
     "warlock": [
         {
             "name": "Lazer tag",
-            "preference": ["discipline", "Recovery"],
+            "preference": ["Discipline", "Recovery"],
             "subclass":  {
                 "item": "1751782730",
                 "aspects":[],
@@ -10,32 +10,32 @@
             },
             "helmet": {
                 "item":"",
-                "recomended_mods":["3235178396", "1374092367"],
-                "optional_mods":["3899134858"]
+                "recomended_mods":["-893450409", "-734681615"],
+                "optional_mods":["-888842671"]
 
             },
             "gauntlets": {
                 "item":"-1224609956",
-                "recomended_mods":["3235178396", "39977368"],
-                "optional_mods":["47859594"]
+                "recomended_mods":["-893450409", "39977368"],
+                "optional_mods":["266256247"]
 
             },
             "chest_armor": {
                 "item":"",
-                "recomended_mods":["3235178396", "1033816001"],
+                "recomended_mods":["-893450409", "-1759602787"],
                 "optional_mods":[]
 
             },
             "leg_armor": {
                 "item":"",
-                "recomended_mods":["3401516887", "3320641683"],
+                "recomended_mods":["-1059788900", "332875332"],
                 "optional_mods":[]
 
             },
-            "bond": {
+            "class_item": {
                 "item":"",
-                "recomended_mods":["3401516887",  "1513970148"],
-                "optional_mods":["3561960031"]
+                "recomended_mods":["-1059788900",  "-212153475"],
+                "optional_mods":["1052631070"]
 
             }
 
@@ -44,6 +44,12 @@
     "hunter": [
         {
             "name": "Trickster & Trapper",
+            "preference": ["Discipline", "Recovery"],
+            "subclass":  {
+                "item": "1751782730",
+                "aspects":[],
+                "fragments":[]
+            },
             "helmet": {
                 "item":""
                 
@@ -60,7 +66,7 @@
                 "item":""
 
             },
-            "bond": {
+            "class_item": {
                 "item":""
 
             }
