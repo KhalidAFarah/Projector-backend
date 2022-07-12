@@ -5,11 +5,15 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"strconv"
+	//"strconv"
 )
 
-type Builds struct {
-	Warlock []struct {
+type Builds struct{
+	class Class `json:"class"`
+}
+
+type Class struct {
+		class string `json:"class"`
 		Name       string   `json:"name"`
 		Preference []string `json:"preference"`
 		Subclass   struct {
@@ -17,6 +21,18 @@ type Builds struct {
 			Aspects   []interface{} `json:"aspects"`
 			Fragments []interface{} `json:"fragments"`
 		} `json:"subclass"`
+		Kinetic struct {
+			Item            string        `json:"item"`
+			RecomendedPerks []interface{} `json:"recomended_perks"`
+		} `json:"kinetic"`
+		Energy struct {
+			Item            string        `json:"item"`
+			RecomendedPerks []interface{} `json:"recomended_perks"`
+		} `json:"energy"`
+		Heavy struct {
+			Item            string        `json:"item"`
+			RecomendedPerks []interface{} `json:"recomended_perks"`
+		} `json:"heavy"`
 		Helmet struct {
 			Item           string   `json:"item"`
 			RecomendedMods []string `json:"recomended_mods"`
@@ -42,75 +58,6 @@ type Builds struct {
 			RecomendedMods []string `json:"recomended_mods"`
 			OptionalMods   []string `json:"optional_mods"`
 		} `json:"class_armor"`
-	} `json:"warlock"`
-	Hunter []struct {
-		Name       string   `json:"name"`
-		Preference []string `json:"preference"`
-		Subclass   struct {
-			Item      string        `json:"item"`
-			Aspects   []interface{} `json:"aspects"`
-			Fragments []interface{} `json:"fragments"`
-		} `json:"subclass"`
-		Helmet struct {
-			Item           string   `json:"item"`
-			RecomendedMods []string `json:"recomended_mods"`
-			OptionalMods   []string `json:"optional_mods"`
-		} `json:"helmet"`
-		Gauntlets struct {
-			Item           string   `json:"item"`
-			RecomendedMods []string `json:"recomended_mods"`
-			OptionalMods   []string `json:"optional_mods"`
-		} `json:"gauntlets"`
-		ChestArmor struct {
-			Item           string        `json:"item"`
-			RecomendedMods []string      `json:"recomended_mods"`
-			OptionalMods   []interface{} `json:"optional_mods"`
-		} `json:"chest_armor"`
-		LegArmor struct {
-			Item           string        `json:"item"`
-			RecomendedMods []string      `json:"recomended_mods"`
-			OptionalMods   []interface{} `json:"optional_mods"`
-		} `json:"leg_armor"`
-		ClassArmor struct {
-			Item           string   `json:"item"`
-			RecomendedMods []string `json:"recomended_mods"`
-			OptionalMods   []string `json:"optional_mods"`
-		} `json:"class_armor"`
-	} `json:"hunter"`
-	Titan []struct{
-		Name       string   `json:"name"`
-		Preference []string `json:"preference"`
-		Subclass   struct {
-			Item      string        `json:"item"`
-			Aspects   []interface{} `json:"aspects"`
-			Fragments []interface{} `json:"fragments"`
-		} `json:"subclass"`
-		Helmet struct {
-			Item           string   `json:"item"`
-			RecomendedMods []string `json:"recomended_mods"`
-			OptionalMods   []string `json:"optional_mods"`
-		} `json:"helmet"`
-		Gauntlets struct {
-			Item           string   `json:"item"`
-			RecomendedMods []string `json:"recomended_mods"`
-			OptionalMods   []string `json:"optional_mods"`
-		} `json:"gauntlets"`
-		ChestArmor struct {
-			Item           string        `json:"item"`
-			RecomendedMods []string      `json:"recomended_mods"`
-			OptionalMods   []interface{} `json:"optional_mods"`
-		} `json:"chest_armor"`
-		LegArmor struct {
-			Item           string        `json:"item"`
-			RecomendedMods []string      `json:"recomended_mods"`
-			OptionalMods   []interface{} `json:"optional_mods"`
-		} `json:"leg_armor"`
-		ClassArmor struct {
-			Item           string   `json:"item"`
-			RecomendedMods []string `json:"recomended_mods"`
-			OptionalMods   []string `json:"optional_mods"`
-		} `json:"class_armor"`
-	} `json:"titan"`
 }
 
 
@@ -130,7 +77,7 @@ func GetBuilds(w http.ResponseWriter, router *http.Request) {
 		json.NewEncoder(w).Encode(m)
 		return
 	}
-	var builds Builds
+	var builds map[string]interface{}
 	err2 := json.Unmarshal(jsonData, &builds)
 	if err2 != nil {
 		m := Message{Response: "Unable to read json data"}
@@ -139,7 +86,8 @@ func GetBuilds(w http.ResponseWriter, router *http.Request) {
 	}
 	
 	buildsData := make(map[string]interface{})
-	buildsData["warlock"] = perChar("warlock", builds)
+	var warlock []Class = builds["warlock"].([]Class)
+	buildsData["warlock"] = perChar("warlock", warlock)
 	//buildsData["hunter"] = perChar("hunter", builds)
 	//buildsData["titan"] = perChar("titan", builds)
 
@@ -149,9 +97,9 @@ func GetBuilds(w http.ResponseWriter, router *http.Request) {
 
 }
 
-func perChar(classname string, builds Builds) ([]interface{}){
+func perChar(classname string, builds []Class) ([]interface{}){
 	var buildsData []interface{}
-	for _, build := range builds.Warlock{
+	for _, build := range builds{
 		buildData :=  make(map[string]interface{})
 
 		//General
@@ -169,16 +117,16 @@ func perChar(classname string, builds Builds) ([]interface{}){
 
 		//Subclass aspects
 		var aspects []string
-		for id := range build.Subclass.Aspects{
-			_, data := DestinyManifestQuery(strconv.Itoa(id), "DestinySandboxPerkDefinition")
+		for _, id := range build.Subclass.Aspects{
+			_, data := DestinyManifestQuery(id.(string), "DestinySandboxPerkDefinition")
 			aspects = append(aspects, data)
 		}
 		manifestItemData["aspects"] = aspects
 
 		//Subclass fragments
 		var fragments []string
-		for id := range build.Subclass.Fragments{
-			_, data := DestinyManifestQuery(strconv.Itoa(id), "DestinySandboxPerkDefinition")
+		for _, id := range build.Subclass.Fragments{
+			_, data := DestinyManifestQuery(id.(string), "DestinySandboxPerkDefinition")
 			fragments = append(fragments, data)
 		}
 		manifestItemData["fragments"] = fragments
@@ -186,25 +134,83 @@ func perChar(classname string, builds Builds) ([]interface{}){
 		//Adding it to object
 		buildData["subclass"] = manifestItemData
 
+		//Primary
+		manifestItemData = make(map[string]interface{})
+		if build.Energy.Item != "" {
+			_, data := DestinyManifestQuery(build.Kinetic.Item, "DestinyInventoryItemDefinition")
+			manifestItemData["item"] = data
+		}
+
+		//Recomended perks for kinetic
+		var recomended_perks []string
+		for _, id := range build.Kinetic.RecomendedPerks{
+			_, data := DestinyManifestQuery(id.(string), "DestinySandboxPerkDefinition")
+			recomended_perks = append(recomended_perks, data)
+		}
+		manifestItemData["recomended_perks"] = recomended_perks
+
+		//Adding it to object
+		buildData["kinetic"] = manifestItemData
+
+		//Energy
+		manifestItemData = make(map[string]interface{})
+		if build.Energy.Item != "" {
+			_, data := DestinyManifestQuery(build.Energy.Item, "DestinyInventoryItemDefinition")
+			manifestItemData["item"] = data
+		}
+
+		//Recomended perks for energy
+		recomended_perks = make([]string, 0)
+		for _, id := range build.Energy.RecomendedPerks{
+			_, data := DestinyManifestQuery(id.(string), "DestinySandboxPerkDefinition")
+			recomended_perks = append(recomended_perks, data)
+		}
+		manifestItemData["recomended_perks"] = recomended_perks
+
+		//Adding it to object
+		buildData["energy"] = manifestItemData
+
+		//Heavy
+		manifestItemData = make(map[string]interface{})
+		if build.Heavy.Item != "" {
+			_, data := DestinyManifestQuery(build.Heavy.Item, "DestinyInventoryItemDefinition")
+			manifestItemData["item"] = data
+		}
+
+		//Recomended perks for energy
+		recomended_perks = make([]string, 0)
+		for _, id := range build.Heavy.RecomendedPerks{
+			_, data := DestinyManifestQuery(id.(string), "DestinySandboxPerkDefinition")
+			recomended_perks = append(recomended_perks, data)
+		}
+		manifestItemData["recomended_perks"] = recomended_perks
+
+		//Adding it to object
+		buildData["heavy"] = manifestItemData
+
+
+
+
+
 		//Helmet
+		manifestItemData = make(map[string]interface{})
 		if build.Helmet.Item != "" {
-			manifestItemData := make(map[string]interface{})
 			_, data := DestinyManifestQuery(build.Helmet.Item, "DestinyInventoryItemDefinition")
 			manifestItemData["item"] = data
 		}
 
 		//Helmet recomended mods
 		var recomended_mods []string
-		for id := range build.Helmet.RecomendedMods{
-			_, data := DestinyManifestQuery(strconv.Itoa(id), "DestinySandboxPerkDefinition")
+		for _, id := range build.Helmet.RecomendedMods{
+			_, data := DestinyManifestQuery(id, "DestinySandboxPerkDefinition")
 			recomended_mods = append(recomended_mods, data)
 		}
 		manifestItemData["recomended_mods"] = recomended_mods
 
 		//Helmet optional mods
 		var optional_mods []string
-		for id := range build.Helmet.OptionalMods{
-			_, data := DestinyManifestQuery(strconv.Itoa(id), "DestinySandboxPerkDefinition")
+		for _, id := range build.Helmet.OptionalMods{
+			_, data := DestinyManifestQuery(id, "DestinySandboxPerkDefinition")
 			optional_mods = append(optional_mods, data)
 		}
 		manifestItemData["optional_mods"] = optional_mods
@@ -214,8 +220,9 @@ func perChar(classname string, builds Builds) ([]interface{}){
 
 
 		//Gauntlet
+		manifestItemData = make(map[string]interface{})
 		if build.Gauntlets.Item != ""{
-			manifestItemData := make(map[string]interface{})
+			
 			_, data := DestinyManifestQuery(build.Gauntlets.Item, "DestinyInventoryItemDefinition")
 			manifestItemData["item"] = data
 		}
@@ -241,24 +248,25 @@ func perChar(classname string, builds Builds) ([]interface{}){
 
 
 		//Chest armor
+		manifestItemData = make(map[string]interface{})
 		if build.ChestArmor.Item != ""{
-			manifestItemData := make(map[string]interface{})
+			
 			_, data := DestinyManifestQuery(build.ChestArmor.Item, "DestinyInventoryItemDefinition")
 			manifestItemData["item"] = data
 		}
 
 		//Chest armor recomended mods
 		recomended_mods = make([]string, 0)
-		for id := range build.ChestArmor.RecomendedMods{
-			_, data := DestinyManifestQuery(strconv.Itoa(id), "DestinySandboxPerkDefinition")
+		for _, id := range build.ChestArmor.RecomendedMods{
+			_, data := DestinyManifestQuery(id, "DestinySandboxPerkDefinition")
 			recomended_mods = append(recomended_mods, data)
 		}
 		manifestItemData["recomended_mods"] = recomended_mods
 
 		//Chest armor optional mods
 		optional_mods = make([]string, 0)
-		for id := range build.ChestArmor.OptionalMods{
-			_, data := DestinyManifestQuery(strconv.Itoa(id), "DestinySandboxPerkDefinition")
+		for _, id := range build.ChestArmor.OptionalMods{
+			_, data := DestinyManifestQuery(id.(string), "DestinySandboxPerkDefinition")
 			optional_mods = append(optional_mods, data)
 		}
 		manifestItemData["optional_mods"] = optional_mods
@@ -268,24 +276,25 @@ func perChar(classname string, builds Builds) ([]interface{}){
 
 
 		//Leg armor
+		manifestItemData = make(map[string]interface{})
+
 		if build.LegArmor.Item != "" {
-			manifestItemData := make(map[string]interface{})
 			_, data := DestinyManifestQuery(build.LegArmor.Item, "DestinyInventoryItemDefinition")
 			manifestItemData["item"] = data
 		}
 
 		//Leg armor recomended mods
 		recomended_mods = make([]string, 0)
-		for id := range build.LegArmor.RecomendedMods{
-			_, data := DestinyManifestQuery(strconv.Itoa(id), "DestinySandboxPerkDefinition")
+		for _, id := range build.LegArmor.RecomendedMods{
+			_, data := DestinyManifestQuery(id, "DestinySandboxPerkDefinition")
 			recomended_mods = append(recomended_mods, data)
 		}
 		manifestItemData["recomended_mods"] = recomended_mods
 
 		//Leg armor optional mods
 		optional_mods = make([]string, 0)
-		for id := range build.LegArmor.OptionalMods{
-			_, data := DestinyManifestQuery(strconv.Itoa(id), "DestinySandboxPerkDefinition")
+		for _, id := range build.LegArmor.OptionalMods{
+			_, data := DestinyManifestQuery(id.(string), "DestinySandboxPerkDefinition")
 			optional_mods = append(optional_mods, data)
 		}
 		manifestItemData["optional_mods"] = optional_mods
@@ -294,24 +303,25 @@ func perChar(classname string, builds Builds) ([]interface{}){
 		buildData["leg_armor"] = manifestItemData
 
 		//Class armor
+		manifestItemData = make(map[string]interface{})
+
 		if build.ClassArmor.Item != "" {
-			manifestItemData := make(map[string]interface{})
 			_, data := DestinyManifestQuery(build.ClassArmor.Item, "DestinyInventoryItemDefinition")
 			manifestItemData["item"] = data
 		}
 
 		//Class armor recomended mods
 		recomended_mods = make([]string, 0)
-		for id := range build.ClassArmor.RecomendedMods{
-			_, data := DestinyManifestQuery(strconv.Itoa(id), "DestinySandboxPerkDefinition")
+		for _, id := range build.ClassArmor.RecomendedMods{
+			_, data := DestinyManifestQuery(id, "DestinySandboxPerkDefinition")
 			recomended_mods = append(recomended_mods, data)
 		}
 		manifestItemData["recomended_mods"] = recomended_mods
 
 		//Class armor optional mods
 		optional_mods = make([]string, 0)
-		for id := range build.ClassArmor.OptionalMods{
-			_, data := DestinyManifestQuery(strconv.Itoa(id), "DestinySandboxPerkDefinition")
+		for _, id := range build.ClassArmor.OptionalMods{
+			_, data := DestinyManifestQuery(id, "DestinySandboxPerkDefinition")
 			optional_mods = append(optional_mods, data)
 		}
 		manifestItemData["optional_mods"] = optional_mods

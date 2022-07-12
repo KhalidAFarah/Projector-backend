@@ -8,6 +8,19 @@
                 "aspects":[],
                 "fragments":[]
             },
+            "kinetic": {
+                "item": "",
+                "recomended_perks": []
+
+            },
+            "energy": {
+                "item": "-1677004005",
+                "recomended_perks": []
+            },
+            "heavy": {
+                "item": "",
+                "recomended_perks": []
+            },
             "helmet": {
                 "item":"",
                 "recomended_mods":["-893450409", "-734681615"],
@@ -32,7 +45,7 @@
                 "optional_mods":[]
 
             },
-            "class_item": {
+            "class_armor": {
                 "item":"",
                 "recomended_mods":["-1059788900",  "-212153475"],
                 "optional_mods":["1052631070"]
