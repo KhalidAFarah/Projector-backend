@@ -2,14 +2,174 @@ package destiny
 
 import (
 	"archive/zip"
+	"database/sql"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+
+	_ "github.com/mattn/go-sqlite3"
 )
+
+type Item struct {
+	DisplayProperties struct {
+		Description string `json:"description"`
+		Name        string `json:"name"`
+		Icon        string `json:"icon"`
+		HasIcon     bool   `json:"hasIcon"`
+	} `json:"displayProperties"`
+	CollectibleHash      int64  `json:"collectibleHash"`
+	IconWatermark        string `json:"iconWatermark"`
+	IconWatermarkShelved string `json:"iconWatermarkShelved"`
+
+	Screenshot                 string `json:"screenshot"`
+	ItemTypeDisplayName        string `json:"itemTypeDisplayName"`
+	FlavorText                 string `json:"flavorText"`
+	UIItemDisplayStyle         string `json:"uiItemDisplayStyle"`
+	ItemTypeAndTierDisplayName string `json:"itemTypeAndTierDisplayName"`
+	DisplaySource              string `json:"displaySource"`
+	Action                     struct {
+		VerbName                string        `json:"verbName"`
+		VerbDescription         string        `json:"verbDescription"`
+		IsPositive              bool          `json:"isPositive"`
+		RequiredCooldownSeconds int           `json:"requiredCooldownSeconds"`
+		RequiredItems           []interface{} `json:"requiredItems"`
+		ProgressionRewards      []interface{} `json:"progressionRewards"`
+		ActionTypeLabel         string        `json:"actionTypeLabel"`
+		RewardSheetHash         int           `json:"rewardSheetHash"`
+		RewardItemHash          int           `json:"rewardItemHash"`
+		RewardSiteHash          int           `json:"rewardSiteHash"`
+		RequiredCooldownHash    int           `json:"requiredCooldownHash"`
+		DeleteOnAction          bool          `json:"deleteOnAction"`
+		ConsumeEntireStack      bool          `json:"consumeEntireStack"`
+		UseOnAcquire            bool          `json:"useOnAcquire"`
+	} `json:"action"`
+	Inventory struct {
+		MaxStackSize                             int    `json:"maxStackSize"`
+		BucketTypeHash                           int64  `json:"bucketTypeHash"`
+		RecoveryBucketTypeHash                   int    `json:"recoveryBucketTypeHash"`
+		TierTypeHash                             int64  `json:"tierTypeHash"`
+		IsInstanceItem                           bool   `json:"isInstanceItem"`
+		NonTransferrableOriginal                 bool   `json:"nonTransferrableOriginal"`
+		TierTypeName                             string `json:"tierTypeName"`
+		TierType                                 int    `json:"tierType"`
+		ExpirationTooltip                        string `json:"expirationTooltip"`
+		ExpiredInActivityMessage                 string `json:"expiredInActivityMessage"`
+		ExpiredInOrbitMessage                    string `json:"expiredInOrbitMessage"`
+		SuppressExpirationWhenObjectivesComplete bool   `json:"suppressExpirationWhenObjectivesComplete"`
+	} `json:"inventory"`
+	Stats struct {
+		DisablePrimaryStatDisplay bool        `json:"disablePrimaryStatDisplay"`
+		StatGroupHash             int         `json:"statGroupHash"`
+		Stats                     interface{} `json:"stats"`
+		HasDisplayableStats       bool        `json:"hasDisplayableStats"`
+		PrimaryBaseStatHash       int         `json:"primaryBaseStatHash"`
+	} `json:"stats"`
+	EquippingBlock struct {
+		UniqueLabelHash       int      `json:"uniqueLabelHash"`
+		EquipmentSlotTypeHash int64    `json:"equipmentSlotTypeHash"`
+		Attributes            int      `json:"attributes"`
+		EquippingSoundHash    int      `json:"equippingSoundHash"`
+		HornSoundHash         int      `json:"hornSoundHash"`
+		AmmoType              int      `json:"ammoType"`
+		DisplayStrings        []string `json:"displayStrings"`
+	} `json:"equippingBlock"`
+	TranslationBlock struct {
+		WeaponPatternHash int64 `json:"weaponPatternHash"`
+		Arrangements      []struct {
+			ClassHash          int `json:"classHash"`
+			ArtArrangementHash int `json:"artArrangementHash"`
+		} `json:"arrangements"`
+		HasGeometry bool `json:"hasGeometry"`
+	} `json:"translationBlock"`
+	Preview struct {
+		ScreenStyle         string `json:"screenStyle"`
+		PreviewVendorHash   int    `json:"previewVendorHash"`
+		PreviewActionString string `json:"previewActionString"`
+	} `json:"preview"`
+	Quality struct {
+		ItemLevels                      []interface{} `json:"itemLevels"`
+		QualityLevel                    int           `json:"qualityLevel"`
+		InfusionCategoryName            string        `json:"infusionCategoryName"`
+		InfusionCategoryHash            int64         `json:"infusionCategoryHash"`
+		InfusionCategoryHashes          []int64       `json:"infusionCategoryHashes"`
+		ProgressionLevelRequirementHash int64         `json:"progressionLevelRequirementHash"`
+		CurrentVersion                  int           `json:"currentVersion"`
+		Versions                        []struct {
+			PowerCapHash int64 `json:"powerCapHash"`
+		} `json:"versions"`
+		DisplayVersionWatermarkIcons []string `json:"displayVersionWatermarkIcons"`
+	} `json:"quality"`
+	AcquireRewardSiteHash int `json:"acquireRewardSiteHash"`
+	AcquireUnlockHash     int `json:"acquireUnlockHash"`
+	Sockets               struct {
+		Detail        string `json:"detail"`
+		SocketEntries []struct {
+			SocketTypeHash                        int64         `json:"socketTypeHash"`
+			SingleInitialItemHash                 int           `json:"singleInitialItemHash"`
+			ReusablePlugItems                     []interface{} `json:"reusablePlugItems"`
+			PreventInitializationOnVendorPurchase bool          `json:"preventInitializationOnVendorPurchase"`
+			PreventInitializationWhenVersioning   bool          `json:"preventInitializationWhenVersioning"`
+			HidePerksInItemTooltip                bool          `json:"hidePerksInItemTooltip"`
+			PlugSources                           int           `json:"plugSources"`
+			ReusablePlugSetHash                   int           `json:"reusablePlugSetHash,omitempty"`
+			OverridesUIAppearance                 bool          `json:"overridesUiAppearance"`
+			DefaultVisible                        bool          `json:"defaultVisible"`
+			RandomizedPlugSetHash                 int           `json:"randomizedPlugSetHash,omitempty"`
+		} `json:"socketEntries"`
+		IntrinsicSockets []struct {
+			PlugItemHash   int64 `json:"plugItemHash"`
+			SocketTypeHash int   `json:"socketTypeHash"`
+			DefaultVisible bool  `json:"defaultVisible"`
+		} `json:"intrinsicSockets"`
+		SocketCategories []struct {
+			SocketCategoryHash int64 `json:"socketCategoryHash"`
+			SocketIndexes      []int `json:"socketIndexes"`
+		} `json:"socketCategories"`
+	} `json:"sockets"`
+	TalentGrid struct {
+		TalentGridHash   int    `json:"talentGridHash"`
+		ItemDetailString string `json:"itemDetailString"`
+		HudDamageType    int    `json:"hudDamageType"`
+	} `json:"talentGrid"`
+	InvestmentStats []struct {
+		StatTypeHash          int  `json:"statTypeHash"`
+		Value                 int  `json:"value"`
+		IsConditionallyActive bool `json:"isConditionallyActive"`
+	} `json:"investmentStats"`
+	Perks []struct {
+		RequirementDisplayString string `json:"requirementDisplayString"`
+		PerkHash                 int    `json:"perkHash"`
+		PerkVisibility           int    `json:"perkVisibility"`
+	} `json:"perks"`
+	LoreHash                          int      `json:"loreHash"`
+	SummaryItemHash                   int64    `json:"summaryItemHash"`
+	AllowActions                      bool     `json:"allowActions"`
+	DoesPostmasterPullHaveSideEffects bool     `json:"doesPostmasterPullHaveSideEffects"`
+	NonTransferrable                  bool     `json:"nonTransferrable"`
+	ItemCategoryHashes                []int    `json:"itemCategoryHashes"`
+	SpecialItemType                   int      `json:"specialItemType"`
+	ItemType                          int      `json:"itemType"`
+	ItemSubType                       int      `json:"itemSubType"`
+	ClassType                         int      `json:"classType"`
+	BreakerType                       int      `json:"breakerType"`
+	Equippable                        bool     `json:"equippable"`
+	DamageTypeHashes                  []int64  `json:"damageTypeHashes"`
+	DamageTypes                       []int    `json:"damageTypes"`
+	DefaultDamageType                 int      `json:"defaultDamageType"`
+	DefaultDamageTypeHash             int64    `json:"defaultDamageTypeHash"`
+	IsWrapper                         bool     `json:"isWrapper"`
+	TraitIds                          []string `json:"traitIds"`
+	TraitHashes                       []int64  `json:"traitHashes"`
+	Hash                              int64    `json:"hash"`
+	Index                             int      `json:"index"`
+	Redacted                          bool     `json:"redacted"`
+	Blacklisted                       bool     `json:"blacklisted"`
+}
 
 type ManifestURL struct {
 	Response struct {
@@ -2077,7 +2237,7 @@ type AutoGenerated struct {
 	} `json:"MessageData"`
 }
 
-func GenerateManifest(w http.ResponseWriter, router *http.Request) {
+func GenerateManifest() {
 	client := http.Client{}
 	request, error := http.NewRequest("GET", "http://www.bungie.net/Platform/Destiny2/Manifest/", nil)
 	if error != nil {
@@ -2173,8 +2333,86 @@ func GenerateManifest(w http.ResponseWriter, router *http.Request) {
 			}
 		}
 	}
-	e := os.Remove("./controllers/destiny/manifest/manifest.zip")
-	if e != nil {
-		log.Fatal("Unable to delete manifest.zip")
+
+	//attempting to do this in a database
+	dbfile, error := os.Create("./controllers/destiny/manifest/manifest.db")
+	if error != nil {
+		log.Fatal(error)
 	}
+	dbfile.Close()
+
+	newDB, error := sql.Open("sqlite3", "./controllers/destiny/manifest/manifest.db")
+	if error != nil {
+		log.Fatal(error)
+		log.Fatal("Unable to open database")
+	}
+
+	_, error = newDB.Exec(
+		"DROP TABLE IF EXISTS `DestinyInventoryItemDefinition`;" +
+			"CREATE TABLE `DestinyInventoryItemDefinition` (`hash` VARCHAR(30) NOT NULL PRIMARY KEY, `json` BLOB NOT NULL);") //+
+	//"CREATE TABLE `DestinySandboxPerkDefinition` (`hash` VARCHAR(30) NOT NULL PRIMARY KEY, `json` BLOB NOT NULL);")
+	if error != nil {
+		log.Fatal(error)
+		log.Fatal("Unable to create table")
+	}
+
+	//putting it all into a manifest.content file with the hashes rather than id
+	db, error := sql.Open("sqlite3", "./controllers/destiny/manifest/world_sql_content_c1d4ac435e5ce5b3046fe2d0e6190ce4.content")
+	if error != nil {
+		log.Fatal("Unable to load destiny manifest file")
+
+	}
+
+	rows, error := db.Query("SELECT * FROM DestinyInventoryItemDefinition")
+	if error != nil {
+		log.Fatal("Unable to query the destiny manifest")
+	}
+
+	var idd int
+	var jsondata string
+	for rows.Next() {
+		rows.Scan(&idd, &jsondata)
+		var tmp Item
+		json.Unmarshal([]byte(jsondata), &tmp)
+		hash := fmt.Sprintf("%v", tmp.Hash)
+
+		out, _ := json.Marshal(tmp)
+
+		_, error = newDB.Exec("INSERT INTO DestinyInventoryItemDefinition (hash, json) VALUES (?,?)", hash, string(out))
+		if error != nil {
+
+			fmt.Println("Unable to inserts destiny items to manifest")
+			log.Fatal(error)
+		}
+
+	}
+
+	/*
+		rows, error = db.Query("SELECT * FROM DestinySandboxPerkDefinition")
+		if error != nil {
+			log.Fatal("Unable to query the destiny manifest")
+		}
+
+		for rows.Next() {
+			rows.Scan(&idd, &jsondata)
+			var tmp Item
+			json.Unmarshal([]byte(jsondata), &tmp)
+
+			hash := fmt.Sprintf("%v", tmp.Hash)
+			out, _ := json.Marshal(tmp)
+
+			_, error = newDB.Exec("INSERT INTO DestinySandboxPerkDefinition (hash, json) VALUES (?,?)", hash, string(out))
+			if error != nil {
+				fmt.Println("Unable to insert perks to manifest")
+				fmt.Println(error)
+			}
+
+		}
+	*/
+
+	newDB.Close()
+	//e := os.Remove("./controllers/destiny/manifest/manifest.zip")
+	//if e != nil {
+	//	log.Fatal("Unable to delete manifest.zip")
+	//}
 }

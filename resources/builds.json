@@ -14,7 +14,7 @@
 
             },
             "energy": {
-                "item": "-1677004005",
+                "item": "4017959782",
                 "recomended_perks": []
             },
             "heavy": {
@@ -23,32 +23,32 @@
             },
             "helmet": {
                 "item":"",
-                "recomended_mods":["-893450409", "-734681615"],
-                "optional_mods":["-888842671"]
+                "recomended_mods":["4048838440", "631976966"],
+                "optional_mods":["3899134858"]
 
             },
             "gauntlets": {
-                "item":"-1224609956",
-                "recomended_mods":["-893450409", "39977368"],
-                "optional_mods":["266256247"]
+                "item":"3070357340",
+                "recomended_mods":["4048838440", "327265103"],
+                "optional_mods":["47859594"]
 
             },
             "chest_armor": {
                 "item":"",
-                "recomended_mods":["-893450409", "-1759602787"],
+                "recomended_mods":["4048838440", "1279446438"],
                 "optional_mods":[]
 
             },
             "leg_armor": {
                 "item":"",
-                "recomended_mods":["-1059788900", "332875332"],
+                "recomended_mods":["2645858828", "3320641683"],
                 "optional_mods":[]
 
             },
             "class_armor": {
                 "item":"",
-                "recomended_mods":["-1059788900",  "-212153475"],
-                "optional_mods":["1052631070"]
+                "recomended_mods":["2645858828",  "1513970148"],
+                "optional_mods":["3561960031"]
 
             }
 

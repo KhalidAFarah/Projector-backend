@@ -106,17 +106,17 @@ func perChar(builds []Class) []interface{} {
 		}
 
 		//Subclass aspects
-		aspects := make([]map[string]interface{}, 0)
+		aspects := make([]Item, 0)
 		for _, id := range build.Subclass.Aspects {
-			_, data := DestinyManifestQuery(id.(string), "DestinySandboxPerkDefinition")
+			_, data := DestinyManifestQuery(id.(string), "DestinyInventoryItemDefinition")
 			aspects = append(aspects, data)
 		}
 		manifestItemData["aspects"] = aspects
 
 		//Subclass fragments
-		fragments := make([]map[string]interface{}, 0)
+		fragments := make([]Item, 0)
 		for _, id := range build.Subclass.Fragments {
-			_, data := DestinyManifestQuery(id.(string), "DestinySandboxPerkDefinition")
+			_, data := DestinyManifestQuery(id.(string), "DestinyInventoryItemDefinition")
 			fragments = append(fragments, data)
 		}
 		manifestItemData["fragments"] = fragments
@@ -132,9 +132,9 @@ func perChar(builds []Class) []interface{} {
 		}
 
 		//Recomended perks for kinetic
-		var recomended_perks []map[string]interface{}
+		var recomended_perks []Item
 		for _, id := range build.Kinetic.RecomendedPerks {
-			_, data := DestinyManifestQuery(id.(string), "DestinySandboxPerkDefinition")
+			_, data := DestinyManifestQuery(id.(string), "DestinyInventoryItemDefinition")
 			recomended_perks = append(recomended_perks, data)
 		}
 		manifestItemData["recomended_perks"] = recomended_perks
@@ -150,9 +150,9 @@ func perChar(builds []Class) []interface{} {
 		}
 
 		//Recomended perks for energy
-		recomended_perks = make([]map[string]interface{}, 0)
+		recomended_perks = make([]Item, 0)
 		for _, id := range build.Energy.RecomendedPerks {
-			_, data := DestinyManifestQuery(id.(string), "DestinySandboxPerkDefinition")
+			_, data := DestinyManifestQuery(id.(string), "DestinyInventoryItemDefinition")
 			recomended_perks = append(recomended_perks, data)
 		}
 		manifestItemData["recomended_perks"] = recomended_perks
@@ -168,9 +168,9 @@ func perChar(builds []Class) []interface{} {
 		}
 
 		//Recomended perks for energy
-		recomended_perks = make([]map[string]interface{}, 0)
+		recomended_perks = make([]Item, 0)
 		for _, id := range build.Heavy.RecomendedPerks {
-			_, data := DestinyManifestQuery(id.(string), "DestinySandboxPerkDefinition")
+			_, data := DestinyManifestQuery(id.(string), "DestinyInventoryItemDefinition")
 			recomended_perks = append(recomended_perks, data)
 		}
 		manifestItemData["recomended_perks"] = recomended_perks
@@ -186,17 +186,17 @@ func perChar(builds []Class) []interface{} {
 		}
 
 		//Helmet recomended mods
-		var recomended_mods []map[string]interface{}
+		var recomended_mods []Item
 		for _, id := range build.Helmet.RecomendedMods {
-			_, data := DestinyManifestQuery(id, "DestinySandboxPerkDefinition")
+			_, data := DestinyManifestQuery(id, "DestinyInventoryItemDefinition")
 			recomended_mods = append(recomended_mods, data)
 		}
 		manifestItemData["recomended_mods"] = recomended_mods
 
 		//Helmet optional mods
-		var optional_mods []map[string]interface{}
+		var optional_mods []Item
 		for _, id := range build.Helmet.OptionalMods {
-			_, data := DestinyManifestQuery(id, "DestinySandboxPerkDefinition")
+			_, data := DestinyManifestQuery(id, "DestinyInventoryItemDefinition")
 			optional_mods = append(optional_mods, data)
 		}
 		manifestItemData["optional_mods"] = optional_mods
@@ -213,17 +213,17 @@ func perChar(builds []Class) []interface{} {
 		}
 
 		//Gauntlet recomended mods
-		recomended_mods = make([]map[string]interface{}, 0)
+		recomended_mods = make([]Item, 0)
 		for _, id := range build.Gauntlets.RecomendedMods {
-			_, data := DestinyManifestQuery(id, "DestinySandboxPerkDefinition")
+			_, data := DestinyManifestQuery(id, "DestinyInventoryItemDefinition")
 			recomended_mods = append(recomended_mods, data)
 		}
 		manifestItemData["recomended_mods"] = recomended_mods
 
 		//Gauntlet optional mods
-		optional_mods = make([]map[string]interface{}, 0)
+		optional_mods = make([]Item, 0)
 		for _, id := range build.Gauntlets.OptionalMods {
-			_, data := DestinyManifestQuery(id, "DestinySandboxPerkDefinition")
+			_, data := DestinyManifestQuery(id, "DestinyInventoryItemDefinition")
 			optional_mods = append(optional_mods, data)
 		}
 		manifestItemData["optional_mods"] = optional_mods
@@ -240,17 +240,17 @@ func perChar(builds []Class) []interface{} {
 		}
 
 		//Chest armor recomended mods
-		recomended_mods = make([]map[string]interface{}, 0)
+		recomended_mods = make([]Item, 0)
 		for _, id := range build.ChestArmor.RecomendedMods {
-			_, data := DestinyManifestQuery(id, "DestinySandboxPerkDefinition")
+			_, data := DestinyManifestQuery(id, "DestinyInventoryItemDefinition")
 			recomended_mods = append(recomended_mods, data)
 		}
 		manifestItemData["recomended_mods"] = recomended_mods
 
 		//Chest armor optional mods
-		optional_mods = make([]map[string]interface{}, 0)
+		optional_mods = make([]Item, 0)
 		for _, id := range build.ChestArmor.OptionalMods {
-			_, data := DestinyManifestQuery(id.(string), "DestinySandboxPerkDefinition")
+			_, data := DestinyManifestQuery(id.(string), "DestinyInventoryItemDefinition")
 			optional_mods = append(optional_mods, data)
 		}
 		manifestItemData["optional_mods"] = optional_mods
@@ -267,17 +267,17 @@ func perChar(builds []Class) []interface{} {
 		}
 
 		//Leg armor recomended mods
-		recomended_mods = make([]map[string]interface{}, 0)
+		recomended_mods = make([]Item, 0)
 		for _, id := range build.LegArmor.RecomendedMods {
-			_, data := DestinyManifestQuery(id, "DestinySandboxPerkDefinition")
+			_, data := DestinyManifestQuery(id, "DestinyInventoryItemDefinition")
 			recomended_mods = append(recomended_mods, data)
 		}
 		manifestItemData["recomended_mods"] = recomended_mods
 
 		//Leg armor optional mods
-		optional_mods = make([]map[string]interface{}, 0)
+		optional_mods = make([]Item, 0)
 		for _, id := range build.LegArmor.OptionalMods {
-			_, data := DestinyManifestQuery(id.(string), "DestinySandboxPerkDefinition")
+			_, data := DestinyManifestQuery(id.(string), "DestinyInventoryItemDefinition")
 			optional_mods = append(optional_mods, data)
 		}
 		manifestItemData["optional_mods"] = optional_mods
@@ -294,17 +294,17 @@ func perChar(builds []Class) []interface{} {
 		}
 
 		//Class armor recomended mods
-		recomended_mods = make([]map[string]interface{}, 0)
+		recomended_mods = make([]Item, 0)
 		for _, id := range build.ClassArmor.RecomendedMods {
-			_, data := DestinyManifestQuery(id, "DestinySandboxPerkDefinition")
+			_, data := DestinyManifestQuery(id, "DestinyInventoryItemDefinition")
 			recomended_mods = append(recomended_mods, data)
 		}
 		manifestItemData["recomended_mods"] = recomended_mods
 
 		//Class armor optional mods
-		optional_mods = make([]map[string]interface{}, 0)
+		optional_mods = make([]Item, 0)
 		for _, id := range build.ClassArmor.OptionalMods {
-			_, data := DestinyManifestQuery(id, "DestinySandboxPerkDefinition")
+			_, data := DestinyManifestQuery(id, "DestinyInventoryItemDefinition")
 			optional_mods = append(optional_mods, data)
 		}
 		manifestItemData["optional_mods"] = optional_mods
