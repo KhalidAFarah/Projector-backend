@@ -126,7 +126,7 @@ func perChar(builds []Class) []interface{} {
 
 		//Primary
 		manifestItemData = make(map[string]interface{})
-		if build.Energy.Item != "" {
+		if build.Kinetic.Item != "" {
 			_, data := DestinyManifestQuery(build.Kinetic.Item, "DestinyInventoryItemDefinition")
 			manifestItemData["item"] = data
 		}
