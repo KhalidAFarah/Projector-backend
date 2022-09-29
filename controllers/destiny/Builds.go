@@ -132,7 +132,7 @@ func perChar(builds []Class) []interface{} {
 		}
 
 		//Recomended perks for kinetic
-		var recomended_perks []Item
+		recomended_perks := make([]Item, 0)
 		for _, id := range build.Kinetic.RecomendedPerks {
 			_, data := DestinyManifestQuery(id.(string), "DestinyInventoryItemDefinition")
 			recomended_perks = append(recomended_perks, data)
